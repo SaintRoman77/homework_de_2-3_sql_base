@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../db/ddl/scripts/init_ddl.sql:/docker-entrypoint-initdb.d/init_ddl.sql
+      - ../db/dml/scripts/init_dml.sql:/docker-entrypoint-initdb.d/init_dml.sql
+      - ../db/dml/scripts/queries.sql:/docker-entrypoint-initdb.d/queries.sql
+      - ./app/data/:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      retries: 5
